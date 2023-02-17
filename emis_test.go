@@ -1,7 +1,6 @@
 package emis
 
 import (
-	"fmt"
 	"github.com/joho/godotenv"
 	"log"
 	"os"
@@ -17,31 +16,27 @@ func TestMain(t *testing.M) {
 		log.Println("Unable to load file", envFile)
 	}
 	c = New(os.Getenv("EMIS_USERNAME"), os.Getenv("EMIS_PASSWORD"), os.Getenv("EMIS_HOST"))
+
+	os.Exit(t.Run())
 }
 
-func TestEmis_GetSensorTypes(t *testing.T) {
-	res, err := c.GetSensorTypes()
+func TestEmis_SensorTypes(t *testing.T) {
+	_, err := c.SensorTypes()
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	fmt.Println(string(res))
 }
 
 func TestEmis_Sensors(t *testing.T) {
-	res, err := c.Sensors()
+	_, err := c.Sensors()
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	fmt.Println(res)
 }
 
 func TestEmis_SensorReadings(t *testing.T) {
-	res, err := c.SensorReadings(13214, 2023)
+	_, err := c.SensorReadings(13214, 2023)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	fmt.Println(res)
 }

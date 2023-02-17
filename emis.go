@@ -81,15 +81,15 @@ func handleResponse[T interface{}](r *http.Request, res *T) ([]byte, error) {
 	return body, nil
 }
 
-func (c *Emis) GetSensorTypes() ([]byte, error) {
+func (c *Emis) SensorTypes() ([]byte, error) {
 	req, err := c.Request(http.MethodGet, "/em-remote-service/sensors/json/types", nil)
 	if err != nil {
-		return nil, fmt.Errorf("GetSensorTypes: %w", err)
+		return nil, fmt.Errorf("SensorTypes: %w", err)
 	}
 
 	body, err := handleRequest(req)
 	if err != nil {
-		return nil, fmt.Errorf("GetSensorTypes: %w", err)
+		return nil, fmt.Errorf("SensorTypes: %w", err)
 	}
 
 	return body, nil
