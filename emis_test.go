@@ -1,6 +1,7 @@
 package emis
 
 import (
+	"fmt"
 	"github.com/joho/godotenv"
 	"log"
 	"os"
@@ -35,8 +36,10 @@ func TestEmis_Sensors(t *testing.T) {
 }
 
 func TestEmis_SensorReadings(t *testing.T) {
-	_, err := c.SensorReadings(13214, 2023)
+	res, err := c.SensorReadings(13214, 2022)
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	fmt.Println(res.SensorReadings)
 }

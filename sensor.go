@@ -15,8 +15,8 @@ type Sensor struct {
 }
 
 type SensorReading struct {
-	SensorID       int    `json:"sensorId"`
-	Date           string `json:"date"`
-	Value          string `json:"value"`
-	DataSupplierID string `json:"dataSupplierId,omitempty"`
+	SensorID       int     `json:"sensorId"`
+	Date           string  `json:"date"`
+	Value          float64 `json:"value"`
+	DataSupplierID string  `json:"dataSupplierId,omitempty"`
 }

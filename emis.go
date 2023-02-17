@@ -117,7 +117,7 @@ func (c *Emis) Sensors() (SensorsListResponse, error) {
 
 type SensorReadingsListResponse struct {
 	EmisResponse
-	SensorReadings []SensorReading `json:"sensorReadings"`
+	SensorReadings []SensorReading `json:"readings"`
 }
 
 func (c *Emis) SensorReadings(ID int, year int) (SensorReadingsListResponse, error) {
