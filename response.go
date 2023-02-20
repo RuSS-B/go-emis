@@ -8,4 +8,5 @@ type EmisResponse struct {
 	ProcessedEntries  int    `json:"processedEntries"`
 	DataSupplierID    string `json:"dataSupplierID"`
 	DataSupplierLogin string `json:"dataSupplierLogin"`
+	RawBody           []byte `json:"-"`
 }

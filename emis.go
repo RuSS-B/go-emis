@@ -128,7 +128,8 @@ func (c *Emis) SensorReadings(ID int, year int) (SensorReadingsListResponse, err
 		return res, fmt.Errorf("SensorReadings: %w", err)
 	}
 
-	_, err = handleResponse(req, &res)
+	body, err := handleResponse(req, &res)
+	res.RawBody = body
 
 	if err != nil {
 		return res, fmt.Errorf("SensorReadings: %w", err)
@@ -155,6 +156,131 @@ func (c *Emis) SendSensorReadings(reading SensorReading) (SendSensorReadingsResp
 
 	if err != nil {
 		return res, fmt.Errorf("SensorReadings: %w", err)
+	}
+
+	return res, nil
+}
+
+type Meter struct {
+	MeterID               int64     `json:"meterId"`
+	MeterSerialNumber     string    `json:"meterSerialNumber"`
+	MeterShortDescription string    `json:"meterShortDescription"`
+	MeterDescription      string    `json:"meterDescription"`
+	ObjectName            string    `json:"objectName"`
+	IsgeCode              string    `json:"isgeCode"`
+	Energent              string    `json:"energent"`
+	EnergentId            string    `json:"energentId"`
+	Counters              []Counter `json:"counters"`
+}
+
+type Counter struct {
+	Counter int    `json:"counter"`
+	Name    string `json:"name"`
+}
+
+type MeterListResponse struct {
+	EmisResponse
+	Meters []Meter `json:"meters"`
+}
+
+func (c *Emis) Meters() (MeterListResponse, error) {
+	var res MeterListResponse
+	req, err := c.Request(http.MethodGet, "/em-remote-service/query/json/meters", nil)
+	if err != nil {
+		return res, fmt.Errorf("Meters: %w", err)
+	}
+
+	_, err = handleResponse(req, &res)
+	if err != nil {
+		return res, fmt.Errorf("Meters: %w", err)
+	}
+
+	return res, nil
+}
+
+type MeterReading struct {
+	ServiceUrl string  `json:"serviceUrl,omitempty"`
+	ID         string  `json:"id,omitempty"`
+	MeterID    string  `json:"meterId"`
+	Date       string  `json:"date"`
+	C1         float64 `json:"c1"`
+	C2         float64 `json:"c2,omitempty"`
+	C3         float64 `json:"c3,omitempty"`
+	C4         float64 `json:"c4,omitempty"`
+	C5         float64 `json:"c5,omitempty"`
+	InternalID string  `json:"internalId"`
+}
+
+type MeterReadingsListResponse struct {
+	EmisResponse
+	Readings []MeterReading `json:"readings"`
+}
+
+func (c *Emis) MeterReadings(ID int, year int, month int) (MeterReadingsListResponse, error) {
+	var res MeterReadingsListResponse
+
+	req, err := c.Request(http.MethodGet, fmt.Sprintf("/em-remote-service/query/json/meter/%d/readings/%d/%d", ID, year, month), nil)
+	if err != nil {
+		return res, fmt.Errorf("MeterReadings: %w", err)
+	}
+
+	body, err := handleResponse(req, &res)
+	res.RawBody = body
+
+	if err != nil {
+		return res, fmt.Errorf("MeterReadings: %w", err)
+	}
+
+	return res, nil
+}
+
+type InsertReadingRequest[T SuccessReading | FailedReading | MeterReading] struct {
+	Insert Reading[T] `json:"insert"`
+}
+
+type Reading[T SuccessReading | FailedReading | MeterReading] struct {
+	Readings []T `json:"readings"`
+}
+
+type SuccessReading struct {
+	TS         string `json:"ts"`
+	ID         string `json:"id"`
+	InternalID string `json:"internalId"`
+}
+
+type FailedReading struct {
+	TS      string  `json:"ts"`
+	Err     string  `json:"err"`
+	ErrDesc string  `json:"errDesc"`
+	MeterID string  `json:"meterId"`
+	Date    string  `json:"date"`
+	C1      float64 `json:"c1"`
+}
+
+type SendMeterReadingsResponse struct {
+	EmisResponse
+	Succeeded InsertReadingRequest[SuccessReading] `json:"succeeded"`
+	Failed    InsertReadingRequest[SuccessReading] `json:"failed"`
+}
+
+func (c *Emis) SendMeterReadings(r []MeterReading) (SendMeterReadingsResponse, error) {
+	reqData := InsertReadingRequest[MeterReading]{
+		Insert: Reading[MeterReading]{
+			Readings: r,
+		},
+	}
+
+	var res SendMeterReadingsResponse
+
+	data, _ := json.Marshal(reqData)
+	req, err := c.Request(http.MethodPost, "/em-remote-service/batch/json/send", data)
+	if err != nil {
+		return res, fmt.Errorf("SendMeterReadings: %w", err)
+	}
+	_, err = handleResponse(req, &res)
+
+	if err != nil {
+		return res, fmt.Errorf("SendMeterReadings: %w", err)
 	}
 
 	return res, nil

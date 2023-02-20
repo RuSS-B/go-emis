@@ -43,3 +43,21 @@ func TestEmis_SensorReadings(t *testing.T) {
 
 	fmt.Println(res.SensorReadings)
 }
+
+func TestEmis_Meters(t *testing.T) {
+	res, err := c.Meters()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fmt.Println(res.Meters)
+}
+
+func TestEmis_MeterReadings(t *testing.T) {
+	res, err := c.MeterReadings(1553797269, 2022, 11)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fmt.Println(string(res.RawBody))
+}
