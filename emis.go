@@ -260,7 +260,7 @@ type FailedReading struct {
 type SendMeterReadingsResponse struct {
 	EmisResponse
 	Succeeded InsertReadingRequest[SuccessReading] `json:"succeeded"`
-	Failed    InsertReadingRequest[SuccessReading] `json:"failed"`
+	Failed    InsertReadingRequest[FailedReading]  `json:"failed"`
 }
 
 func (c *Emis) SendMeterReadings(r []MeterReading) (SendMeterReadingsResponse, error) {
